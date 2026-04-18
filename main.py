@@ -1,10 +1,12 @@
 import pygame
-from logger import log_state
+from logger import log_state , log_event
 from circleshape import CircleShape
 from player import  Player 
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
 from constants import *
+from shot import Shot
+import sys
 def main():
     pygame.init()
 
@@ -40,16 +42,27 @@ def main():
 
     Asteroid.containers = (asteroids, updatable, drawable)
 
-
-        
     # objects
     player=Player(x, y)
-
     asteroidField=AsteroidField()
-   
+
+
+    shots=pygame.sprite.Group()
+
+    Shot.containers = ( shots, updatable, drawable)
 
 
 
+
+
+
+
+  
+
+
+#   Set the containers field of the Shot class to include your new shots group,
+#   along with the drawable and updatable containers,
+#   just like you did with your Player and Asteroid classes.
 
 
 
@@ -72,7 +85,17 @@ def main():
             up.update(dt)
         for dr in drawable:
             dr.draw(screen)
-        
+        for asteroid in asteroids:
+            # kill eteroid
+            for shot in shots:
+                if shot.collides_with(asteroid)==True:
+                    log_event("asteroid_shot")
+                    asteroid.split()
+                    pygame.sprite.Sprite.kill(shot)
+            if player.collides_with(asteroid)==True:
+                log_event("player_hit")
+                print("Game over!")
+                sys.exit()
 
 
         
